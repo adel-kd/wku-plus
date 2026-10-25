@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Linking, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { PageHeader } from '@/components/PageHeader';
@@ -54,7 +54,13 @@ export default function MovieDetail() {
         </View>
         <View style={{ paddingHorizontal: 16, gap: 12 }}>
           <Text style={{ color: colors.ink, lineHeight: 22 }}>{movie.overview}</Text>
-          <Button label="Play on Cinema Website" onPress={() => Linking.openURL('https://cinextma.vercel.app/')} />
+          <Button
+            label="Play inside WKU+"
+            onPress={() => router.push({
+              pathname: '/cinema/watch',
+              params: { id: String(movie.id), type: movie.mediaType ?? type ?? 'movie', title: movie.title },
+            })}
+          />
           {movie.trailerKey ? (
             <Button variant="secondary" label="Watch official trailer" onPress={() => Linking.openURL(`https://www.youtube.com/watch?v=${movie.trailerKey}`)} />
           ) : null}
@@ -68,6 +74,19 @@ export default function MovieDetail() {
                     <Text style={{ color: colors.ink, fontWeight: '700' }}>{season.name}</Text>
                     <Text style={{ color: colors.muted, marginTop: 3 }}>{season.episodeCount} episodes</Text>
                   </View>
+                  <Button
+                    label="Play"
+                    onPress={() => router.push({
+                      pathname: '/cinema/watch',
+                      params: {
+                        id: String(movie.id),
+                        type: 'tv',
+                        title: `${movie.title} — ${season.name}`,
+                        season: String(season.seasonNumber),
+                        episode: '1',
+                      },
+                    })}
+                  />
                 </View>
               ))}
             </View>
